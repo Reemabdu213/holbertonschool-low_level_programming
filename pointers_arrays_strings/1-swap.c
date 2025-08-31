@@ -1,0 +1,13 @@
+#include"main.h"
+/**
+*swap_int-swapsvaluesoftwointegers
+*@a:pointertofirstint
+*@b:pointertosecondint
+*/
+voidswap_int(int*a,int*b)
+{
+inttemp;
+temp=*a;
+*a=*b;
+*b=temp;
+}
