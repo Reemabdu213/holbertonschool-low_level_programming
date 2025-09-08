@@ -1,11 +1,12 @@
 #include "main.h"
+#include <stddef.h>
 
 /**
  * _strstr - locates a substring
  * @haystack: string to search in
  * @needle: substring to find
  *
- * Return: pointer to the beginning of located substring
+ * Return: pointer to the beginning of located substring,
  * or NULL if not found
  */
 char *_strstr(char *haystack, char *needle)
@@ -25,5 +26,5 @@ char *_strstr(char *haystack, char *needle)
 		if (needle[j] == '\0')
 			return (haystack + i);
 	}
-	return (0);
+	return (NULL);
 }
