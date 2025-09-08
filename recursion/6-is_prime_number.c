@@ -1,13 +1,13 @@
 #include "main.h"
 
 /**
- * prime_helper - checks recursively if n has a divisor starting from i
+ * check_prime - helper function to check if n is prime
  * @n: number to check
- * @i: current divisor to test
+ * @i: current divisor
  *
- * Return: 1 if n is prime, 0 otherwise
+ * Return: 1 if prime, 0 otherwise
  */
-static int prime_helper(int n, int i)
+int check_prime(int n, int i)
 {
 	if (i * i > n)
 	{
@@ -17,7 +17,7 @@ static int prime_helper(int n, int i)
 	{
 		return (0);
 	}
-	return (prime_helper(n, i + 1));
+	return (check_prime(n, i + 1));
 }
 
 /**
@@ -32,9 +32,5 @@ int is_prime_number(int n)
 	{
 		return (0);
 	}
-	if (n == 2)
-	{
-		return (1);
-	}
-	return (prime_helper(n, 2));
+	return (check_prime(n, 2));
 }
