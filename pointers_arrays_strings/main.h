@@ -23,5 +23,6 @@ char *string_toupper(char *);
 char *cap_string(char *);
 char *leet(char *s);
 char *_memcpy(char *dest, char *src, unsigned int n);
+unsigned int _strspn(char *s, char *accept);
 
 #endif
