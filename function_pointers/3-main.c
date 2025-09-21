@@ -2,6 +2,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/**
+ * main - performs simple arithmetic operations
+ * @argc: argument count
+ * @argv: argument vector
+ *
+ * Return: 0 on success, exits with error codes otherwise
+ */
 int main(int argc, char *argv[])
 {
 	int a, b, result;
