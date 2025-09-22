@@ -1,22 +1,10 @@
 #include "variadic_functions.h"
 #include <stdio.h>
-#include <stdarg.h>
-
-/**
- * struct printer - maps a format specifier to a print function
- * @t: type specifier
- * @f: function pointer
- */
-struct printer
-{
-	char t;
-	void (*f)(va_list, char *);
-};
 
 /**
  * p_char - prints a char
  * @ap: argument list
- * @sep: separator printed before the value
+ * @sep: separator to print before the value
  */
 static void p_char(va_list ap, char *sep)
 {
@@ -26,7 +14,7 @@ static void p_char(va_list ap, char *sep)
 /**
  * p_int - prints an int
  * @ap: argument list
- * @sep: separator printed before the value
+ * @sep: separator to print before the value
  */
 static void p_int(va_list ap, char *sep)
 {
@@ -36,7 +24,7 @@ static void p_int(va_list ap, char *sep)
 /**
  * p_float - prints a float
  * @ap: argument list
- * @sep: separator printed before the value
+ * @sep: separator to print before the value
  */
 static void p_float(va_list ap, char *sep)
 {
@@ -46,7 +34,7 @@ static void p_float(va_list ap, char *sep)
 /**
  * p_string - prints a string
  * @ap: argument list
- * @sep: separator printed before the value
+ * @sep: separator to print before the value
  */
 static void p_string(va_list ap, char *sep)
 {
@@ -68,7 +56,7 @@ void print_all(const char * const format, ...)
 	va_list ap;
 	unsigned int i = 0, j;
 	char *sep = "";
-	struct printer funcs[] = {
+	printer_t funcs[] = {
 		{'c', p_char},
 		{'i', p_int},
 		{'f', p_float},
