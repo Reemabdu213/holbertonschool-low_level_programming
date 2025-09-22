@@ -2,27 +2,52 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-typedef struct printer
+/**
+ * struct printer - maps a format specifier to a print function
+ * @t: type specifier
+ * @f: function pointer
+ */
+struct printer
 {
 	char t;
 	void (*f)(va_list, char *);
-} printer_t;
+};
 
+/**
+ * p_char - prints a char
+ * @ap: argument list
+ * @sep: separator printed before the value
+ */
 static void p_char(va_list ap, char *sep)
 {
 	printf("%s%c", sep, va_arg(ap, int));
 }
 
+/**
+ * p_int - prints an int
+ * @ap: argument list
+ * @sep: separator printed before the value
+ */
 static void p_int(va_list ap, char *sep)
 {
 	printf("%s%d", sep, va_arg(ap, int));
 }
 
+/**
+ * p_float - prints a float
+ * @ap: argument list
+ * @sep: separator printed before the value
+ */
 static void p_float(va_list ap, char *sep)
 {
 	printf("%s%f", sep, va_arg(ap, double));
 }
 
+/**
+ * p_string - prints a string
+ * @ap: argument list
+ * @sep: separator printed before the value
+ */
 static void p_string(va_list ap, char *sep)
 {
 	char *s = va_arg(ap, char *);
@@ -43,7 +68,7 @@ void print_all(const char * const format, ...)
 	va_list ap;
 	unsigned int i = 0, j;
 	char *sep = "";
-	printer_t funcs[] = {
+	struct printer funcs[] = {
 		{'c', p_char},
 		{'i', p_int},
 		{'f', p_float},
