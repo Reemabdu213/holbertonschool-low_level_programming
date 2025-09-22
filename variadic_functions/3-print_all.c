@@ -11,46 +11,45 @@
 void print_all(const char * const format, ...)
 {
 	va_list ap;
-	unsigned int i = 0, j;
-	char *str, *sep = "";
-
-	typedef struct printer
-	{
-		char t;
-		void (*f)(va_list, char *);
-	} printer;
-
-	void print_char(va_list ap, char *sep) { printf("%s%c", sep, va_arg(ap, int)); }
-	void print_int(va_list ap, char *sep) { printf("%s%d", sep, va_arg(ap, int)); }
-	void print_float(va_list ap, char *sep) { printf("%s%f", sep, va_arg(ap, double)); }
-	void print_string(va_list ap, char *sep)
-	{
-		char *s = va_arg(ap, char *);
-		if (s == NULL)
-			s = "(nil)";
-		printf("%s%s", sep, s);
-	}
-
-	printer funcs[] = {
-		{'c', print_char},
-		{'i', print_int},
-		{'f', print_float},
-		{'s', print_string}
-	};
+	unsigned int i = 0;
+	int first = 1;
+	char *s;
 
 	va_start(ap, format);
 
 	while (format && format[i])
 	{
-		j = 0;
-		while (j < 4)
+		switch (format[i])
 		{
-			if (format[i] == funcs[j].t)
-			{
-				funcs[j].f(ap, sep);
-				sep = ", ";
-			}
-			j++;
+		case 'c':
+			if (!first)
+				printf(", ");
+			printf("%c", va_arg(ap, int));
+			first = 0;
+			break;
+		case 'i':
+			if (!first)
+				printf(", ");
+			printf("%d", va_arg(ap, int));
+			first = 0;
+			break;
+		case 'f':
+			if (!first)
+				printf(", ");
+			printf("%f", va_arg(ap, double));
+			first = 0;
+			break;
+		case 's':
+			if (!first)
+				printf(", ");
+			s = va_arg(ap, char *);
+			if (!s)
+				s = "(nil)";
+			printf("%s", s);
+			first = 0;
+			break;
+		default:
+			break;
 		}
 		i++;
 	}
