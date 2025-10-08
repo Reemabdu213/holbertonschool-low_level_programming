@@ -1,79 +1,74 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
 
-/**
- * error_exit - Prints an error message to stderr and exits.
- * @code: Exit status (97, 98, 99, or 100)
- * @fmt: Format string (e.g. "Error: Can't read from file %s\n")
- * @s: String argument for %s (NULL if not used)
- * @fd: Integer argument for %d (used when closing fd)
- */
-static void error_exit(int code, const char *fmt, const char *s, int fd)
+#define BUF_SIZE 1024
+
+int main(int argc, char *argv[])
 {
-	if (s)
-		dprintf(STDERR_FILENO, fmt, s);
-	else
-		dprintf(STDERR_FILENO, fmt, fd);
-	exit(code);
-}
+	int from, to, c1, c2;
+	ssize_t r, w;
+	char buf[BUF_SIZE];
 
-/**
- * main - Copies the content of a file to another file.
- * @ac: Argument count.
- * @av: Argument vector.
- *
- * Return: 0 on success.
- */
-int main(int ac, char **av)
-{
-	int fd_from, fd_to, r, w, c1, c2;
-	char buf[1024];
-
-	if (ac != 3)
-		error_exit(97, "Usage: cp file_from file_to\n", NULL, 0);
-
-	fd_from = open(av[1], O_RDONLY);
-	if (fd_from == -1)
-		error_exit(98, "Error: Can't read from file %s\n", av[1], 0);
-
-	fd_to = open(av[2], O_WRONLY | O_CREAT | O_TRUNC, 0664);
-	if (fd_to == -1)
+	if (argc != 3)
 	{
-		close(fd_from);
-		error_exit(99, "Error: Can't write to %s\n", av[2], 0);
+		dprintf(STDERR_FILENO, "Usage: cp file_from file_to\n");
+		exit(97);
 	}
 
-	/* اقرأ أول دفعة قبل الدخول في اللوب */
-	r = read(fd_from, buf, 1024);
-	while (r > 0)
+	from = open(argv[1], O_RDONLY);
+	if (from == -1)
 	{
-		w = write(fd_to, buf, r);
-		if (w == -1 || w != r)
+		dprintf(STDERR_FILENO, "Error: Can't read from file %s\n", argv[1]);
+		exit(98);
+	}
+
+	to = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC, 0664);
+	if (to == -1)
+	{
+		dprintf(STDERR_FILENO, "Error: Can't write to %s\n", argv[2]);
+		close(from);
+		exit(99);
+	}
+
+	while (1)
+	{
+		r = read(from, buf, BUF_SIZE);
+		if (r == -1)
 		{
-			close(fd_from);
-			close(fd_to);
-			error_exit(99, "Error: Can't write to %s\n", av[2], 0);
+			dprintf(STDERR_FILENO, "Error: Can't read from file %s\n", argv[1]);
+			close(from);
+			close(to);
+			exit(98);
 		}
-		r = read(fd_from, buf, 1024);
+		if (r == 0) /* EOF */
+			break;
+
+		w = write(to, buf, r);
+		if (w != r)
+		{
+			dprintf(STDERR_FILENO, "Error: Can't write to %s\n", argv[2]);
+			close(from);
+			close(to);
+			exit(99);
+		}
 	}
 
-	/* لو القراءة فشلت في أي وقت */
-	if (r == -1)
-	{
-		close(fd_from);
-		close(fd_to);
-		error_exit(98, "Error: Can't read from file %s\n", av[1], 0);
-	}
-
-	c1 = close(fd_from);
+	c1 = close(from);
 	if (c1 == -1)
-		error_exit(100, "Error: Can't close fd %d\n", NULL, fd_from);
-
-	c2 = close(fd_to);
+	{
+		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", from);
+		/* لا تنسين: لازم نفس الكود 100 */
+		exit(100);
+	}
+	c2 = close(to);
 	if (c2 == -1)
-		error_exit(100, "Error: Can't close fd %d\n", NULL, fd_to);
+	{
+		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", to);
+		exit(100);
+	}
 
 	return (0);
 }
