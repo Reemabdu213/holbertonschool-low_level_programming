@@ -72,23 +72,20 @@ static void copy_stream(int from, int to, const char *src, const char *dst)
 	ssize_t r, w;
 	char buf[BUF_SIZE];
 
-	while (1)
+	while ((r = read(from, buf, sizeof(buf))) > 0)
 	{
-		r = read(from, buf, BUF_SIZE);
-		if (r == -1)
-		{
-			dprintf(STDERR_FILENO, "Error: Can't read from file %s\n", src);
-			exit(98);
-		}
-		if (r == 0)
-			break;
-
 		w = write(to, buf, r);
-		if (w != r)
+		if (w == -1 || w != r)
 		{
 			dprintf(STDERR_FILENO, "Error: Can't write to %s\n", dst);
 			exit(99);
 		}
+	}
+
+	if (r == -1)
+	{
+		dprintf(STDERR_FILENO, "Error: Can't read from file %s\n", src);
+		exit(98);
 	}
 }
 
